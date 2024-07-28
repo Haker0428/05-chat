@@ -1,5 +1,7 @@
 mod config;
+mod error;
 mod handlers;
+mod models;
 
 use handlers::*;
 use std::{ops::Deref, sync::Arc};
@@ -9,6 +11,8 @@ use axum::{
     Router,
 };
 pub use config::AppConfig;
+pub use error::*;
+pub use models::User;
 
 #[derive(Debug, Clone)]
 pub(crate) struct AppState {
