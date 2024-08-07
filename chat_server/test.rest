@@ -1,3 +1,31 @@
 ### chat api
 
-GET http://localhost:6688/
+### signup user
+POST http://localhost:6688/api/signup
+Content-Type: application/json
+
+{
+    "fullname" : "HP",
+    "email" : "hp@gmail.com",
+    "password" : "123456"
+}
+
+### signin user
+POST http://localhost:6688/api/signin
+Content-Type: application/json
+
+
+{
+    "email" : "hp@gmail.com",
+    "password" : "123456"
+}
+
+### signin user (invalid)
+POST http://localhost:6688/api/signin
+Content-Type: application/json
+
+
+{
+    "email" : "hp@gmail.com",
+    "password" : "123"
+}
