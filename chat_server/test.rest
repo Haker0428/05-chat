@@ -11,14 +11,16 @@ Content-Type: application/json
 }
 
 ### signin user
+# @name signin
 POST http://localhost:6688/api/signin
 Content-Type: application/json
-
 
 {
     "email" : "hp@gmail.com",
     "password" : "123456"
 }
+
+@token = {{signin.response.body.token}}
 
 ### signin user (invalid)
 POST http://localhost:6688/api/signin
@@ -29,3 +31,8 @@ Content-Type: application/json
     "email" : "hp@gmail.com",
     "password" : "123"
 }
+
+
+### get chat list
+GET http://localhost:6688/api/chat
+Authorization: Bearer {{token}}

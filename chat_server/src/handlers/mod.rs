@@ -1,7 +1,6 @@
 mod auth;
 mod chat;
 mod message;
-
 pub(crate) use auth::*;
 use axum::response::IntoResponse;
 pub(crate) use chat::*;
