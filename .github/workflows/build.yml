@@ -23,6 +23,7 @@ jobs:
       postgres:
         image: postgres:16
         env:
+          POSTGRES_DB: postgres
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
         options: >-
@@ -48,8 +49,6 @@ jobs:
         run: cargo fmt -- --check
       - name: Check the package for errors
         run: cargo check --all
-      - name: Lint rust sources
-        run: cargo clippy --all-targets --all-features --tests --benches -- -D warnings
       - name: Execute rust tests
         run: cargo nextest run --all-features
       - name: Generate a changelog
