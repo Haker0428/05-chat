@@ -12,6 +12,10 @@ CREATE TABLE IF NOT EXISTS workspaces (
 ALTER TABLE users
     ADD COLUMN ws_id bigint REFERENCES workspaces(id);
 
+-- alter chats table to add workspace_id
+ALTER TABLE chats
+    ADD COLUMN ws_id bigint REFERENCES workspaces(id);
+
 -- begin commit what's meaning?
 -- add super user 0
 BEGIN;
