@@ -44,6 +44,16 @@ Content-Type: application/json
     "password" : "123"
 }
 
+### create chat
+POST http://localhost:6688/api/chats
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "name": "acme",
+    "members": [1, 2],
+    "public": false
+}
 
 ### get chat list
 GET http://localhost:6688/api/chat

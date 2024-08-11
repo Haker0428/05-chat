@@ -121,8 +121,36 @@ fn verify_password(password: &str, password_hash: &str) -> Result<bool, AppError
     Ok(is_valid)
 }
 
+#[allow(dead_code)]
 impl ChatUser {
-    // pub async fn fetch_all(user: &User, )
+    pub async fn fetch_by_ids(ids: &[i64], pool: &PgPool) -> Result<Vec<Self>, AppError> {
+        let users = sqlx::query_as(
+            r#"
+            SELECT id, fullname, email
+            FROM users
+            WHERE id = ANY($1)
+            "#,
+        )
+        .bind(&ids)
+        .fetch_all(pool)
+        .await?;
+        Ok(users)
+    }
+
+    pub async fn fetch_all(ws_id: u64, pool: &PgPool) -> Result<Vec<Self>, AppError> {
+        let users = sqlx::query_as(
+            r#"
+            SELECT id, fullname, email
+            FROM users
+            WHERE ws_id = $1
+            "#,
+        )
+        .bind(ws_id as i64)
+        .fetch_all(pool)
+        .await?;
+
+        Ok(users)
+    }
 }
 
 #[cfg(test)]
