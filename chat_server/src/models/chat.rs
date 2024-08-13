@@ -1,9 +1,11 @@
+use std::str::FromStr;
+
 use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
 
 use crate::AppError;
 
-use super::{Chat, ChatType, ChatUser};
+use super::{Chat, ChatFile, ChatType, ChatUser};
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CreateChat {
@@ -92,6 +94,46 @@ impl Chat {
         .fetch_optional(pool)
         .await?;
         Ok(chat)
+    }
+}
+
+impl FromStr for ChatFile {
+    type Err = AppError;
+
+    // convert /files/1/57a/557/e54f7a703469119342a3be715a7ddc2fe0.png to ChatFile
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let Some(s) = s.strip_prefix("/files") else {
+            return Err(AppError::ChatFileError(
+                "invalid chat file path".to_string(),
+            ));
+        };
+        let parts: Vec<&str> = s.split('/').collect();
+        if parts.len() != 4 {
+            return Err(AppError::ChatFileError(
+                "File path does not valid".to_string(),
+            ));
+        }
+
+        let Ok(ws_id) = parts[1].parse::<u64>() else {
+            return Err(AppError::ChatFileError(format!(
+                "Invalid workspace id: {}",
+                parts[1]
+            )));
+        };
+
+        let Some((part3, ext)) = parts[3].split_once('.') else {
+            return Err(AppError::ChatFileError(format!(
+                "Invalid file name: {}",
+                parts[3]
+            )));
+        };
+
+        let hash = format!("{}{}{}", parts[1], parts[2], part3);
+        Ok(Self {
+            ws_id: ws_id,
+            ext: ext.to_string(),
+            hash,
+        })
     }
 }
 
