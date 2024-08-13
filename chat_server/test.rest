@@ -63,3 +63,27 @@ Authorization: Bearer {{token}}
 ### get user list
 GET http://localhost:6688/api/users
 Authorization: Bearer {{token}}
+
+### upload files
+
+POST http://localhost:6688/api/upload
+Authorization: Bearer {{token}}
+Content-Type: multipart/form-data; boundary=MyBoundary
+
+--MyBoundary
+Content-Disposition: form-data; filename="rust-mascot.png"
+Content-Type: application/octet-stream
+
+< data\rust-mascot.png
+
+--MyBoundary
+Content-Disposition: form-data; filename="hello.txt"
+Content-Type: text/plain
+
+Hello, World!
+--MyBoundary--
+
+### get files
+
+GET http://localhost:6688/api/files/1/57a/557/e54f7a703469119342a3be715a7ddc2fe0.png
+Authorization: Bearer {{token}}

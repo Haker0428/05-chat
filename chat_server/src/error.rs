@@ -11,6 +11,9 @@ pub enum AppError {
     #[error("create chat error: {0}")]
     CreateChatError(String),
 
+    #[error("io found: {0}")]
+    IoError(#[from] std::io::Error),
+
     #[error("not found: {0}")]
     NotFound(String),
 
@@ -37,6 +40,7 @@ impl IntoResponse for AppError {
             Self::EmailAlreadyExists(_) => StatusCode::CONFLICT,
             Self::CreateChatError(_) => StatusCode::BAD_REQUEST,
             Self::NotFound(_) => StatusCode::NOT_FOUND,
+            Self::IoError(_) => StatusCode::CONFLICT,
         };
 
         (status, Json(serde_json::json!({"error": self.to_string()}))).into_response()
