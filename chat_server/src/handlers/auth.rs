@@ -1,5 +1,6 @@
 use axum::{extract::State, http::StatusCode, response::IntoResponse, Json};
 use serde::{Deserialize, Serialize};
+use tracing::info;
 
 use crate::{
     models::{CreateUser, SigninUser},
@@ -15,6 +16,7 @@ pub(crate) async fn signup_handler(
     State(state): State<AppState>,
     Json(input): Json<CreateUser>,
 ) -> Result<impl IntoResponse, AppError> {
+    info!("Entering signup_handler");
     let user = state.create_user(&input).await?;
     let token = state.ek.sign(user)?;
     // let mut header = HeaderMap::new();

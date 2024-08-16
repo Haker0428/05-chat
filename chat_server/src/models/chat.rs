@@ -94,6 +94,22 @@ impl AppState {
         .await?;
         Ok(chat)
     }
+
+    pub async fn is_chat_member(&self, chat_id: u64, user_id: u64) -> Result<bool, AppError> {
+        let is_member = sqlx::query(
+            r#"
+            SELECT 1
+            FROM chats
+            WHERE id = $1 AND $2 = ANY(members)
+            "#,
+        )
+        .bind(chat_id as i64)
+        .bind(user_id as i64)
+        .fetch_optional(&self.pool)
+        .await?;
+
+        Ok(is_member.is_some())
+    }
 }
 
 impl FromStr for ChatFile {
@@ -101,22 +117,22 @@ impl FromStr for ChatFile {
 
     // convert /files/1/57a/557/e54f7a703469119342a3be715a7ddc2fe0.png to ChatFile
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let Some(s) = s.strip_prefix("/files") else {
-            return Err(AppError::ChatFileError(
-                "invalid chat file path".to_string(),
-            ));
+        let Some(s) = s.strip_prefix("/files/") else {
+            return Err(AppError::ChatFileError(format!("Invalid file path: {}", s)));
         };
         let parts: Vec<&str> = s.split('/').collect();
         if parts.len() != 4 {
-            return Err(AppError::ChatFileError(
-                "File path does not valid".to_string(),
-            ));
+            return Err(AppError::ChatFileError(format!(
+                "File does not valid parts len : {} path {}",
+                parts.len(),
+                s
+            )));
         }
 
-        let Ok(ws_id) = parts[1].parse::<u64>() else {
+        let Ok(ws_id) = parts[0].parse::<u64>() else {
             return Err(AppError::ChatFileError(format!(
                 "Invalid workspace id: {}",
-                parts[1]
+                parts[0]
             )));
         };
 
@@ -209,6 +225,23 @@ mod tests {
         let chats = state.fetch_chats(1).await.expect("fetch all chats failed");
 
         assert_eq!(chats.len(), 4);
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn chat_is_member_should_work() -> Result<()> {
+        let (_tdb, state) = AppState::new_for_test().await?;
+        let is_member = state.is_chat_member(1, 1).await.expect("is member failed");
+        assert!(is_member);
+
+        // user 6 doesn't exist
+        let is_member = state.is_chat_member(1, 6).await.expect("is member failed");
+        assert!(!is_member);
+
+        // chat 10 does't exist
+        let is_member = state.is_chat_member(10, 1).await.expect("is member failed");
+        assert!(!is_member);
+
         Ok(())
     }
 }

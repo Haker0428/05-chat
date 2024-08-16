@@ -26,7 +26,7 @@ pub(crate) async fn create_chat_handler(
     Ok((StatusCode::CREATED, Json(chat)).into_response())
 }
 
-pub(crate) async fn chat_chat_handler(
+pub(crate) async fn get_chat_handler(
     State(state): State<AppState>,
     Path(id): Path<u64>,
 ) -> Result<impl IntoResponse, AppError> {
