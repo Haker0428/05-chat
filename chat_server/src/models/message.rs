@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{AppError, AppState, ChatFile};
 
-use super::Message;
+use chat_core::Message;
 
 #[allow(dead_code)]
 #[derive(Debug, Clone, Serialize, Deserialize)]

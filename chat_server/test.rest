@@ -2,7 +2,7 @@
 GET http://www.baidu.com
 
 ### signup user
-POST http://localhost:6689/api/signup
+POST http://localhost:6688/api/signup
 Content-Type: application/json
 
 {

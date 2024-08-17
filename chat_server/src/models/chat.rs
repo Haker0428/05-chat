@@ -1,10 +1,11 @@
+use chat_core::{Chat, ChatType};
 use std::str::FromStr;
 
 use serde::{Deserialize, Serialize};
 
 use crate::{AppError, AppState};
 
-use super::{Chat, ChatFile, ChatType};
+use super::ChatFile;
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CreateChat {

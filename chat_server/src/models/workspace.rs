@@ -1,8 +1,6 @@
-use sqlx::PgPool;
-
 use crate::{AppError, AppState};
 
-use super::WorkSpace;
+use chat_core::WorkSpace;
 
 impl AppState {
     pub async fn create_workspace(&self, name: &str, user_id: u64) -> Result<WorkSpace, AppError> {
@@ -48,10 +46,12 @@ impl AppState {
         .await?;
         Ok(ws)
     }
-}
 
-impl WorkSpace {
-    pub async fn update_owner(&self, owner_id: u64, pool: &PgPool) -> Result<Self, AppError> {
+    pub async fn update_workspace_owner(
+        &self,
+        id: u64,
+        owner_id: u64,
+    ) -> Result<WorkSpace, AppError> {
         // update owner_id in two cases 1) owner_id = 0 3) owner's ws_id = id
         let ws = sqlx::query_as(
             r#"
@@ -62,8 +62,8 @@ impl WorkSpace {
             "#,
         )
         .bind(owner_id as i64)
-        .bind(self.id)
-        .fetch_one(pool)
+        .bind(id as i64)
+        .fetch_one(&self.pool)
         .await?;
         Ok(ws)
     }
@@ -72,9 +72,8 @@ impl WorkSpace {
 mod tests {
     use anyhow::{Ok, Result};
 
-    use crate::models::CreateUser;
-
     use super::*;
+    use crate::models::CreateUser;
 
     #[tokio::test]
     async fn workspace_should_create_and_set_owner() -> Result<()> {
@@ -86,7 +85,10 @@ mod tests {
         assert_eq!(ws.name, "test");
         assert_eq!(user.ws_id, ws.id);
 
-        let ws = ws.update_owner(user.id as u64, &state.pool).await.unwrap();
+        let ws = state
+            .update_workspace_owner(ws.id as _, user.id as u64)
+            .await
+            .unwrap();
         assert_eq!(ws.owner_id, user.id);
         Ok(())
     }
