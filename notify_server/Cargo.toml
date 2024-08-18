@@ -15,5 +15,8 @@ tracing = { workspace = true }
 tracing-subscriber = { workspace = true }
 axum-extra = { version = "0.9.3", features = ["typed-header"] }
 futures = "0.3.30"
-tokio-stream = "0.1.15"
+tokio-stream = { version = "0.1.15", features = ["sync"] }
 chat-core = { workspace = true }
+jwt-simple = { workspace = true }
+serde_json = { workspace = true }
+dashmap = "6.0.1"

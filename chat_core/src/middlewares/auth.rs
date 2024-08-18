@@ -71,6 +71,7 @@ mod tests {
             self.0.dk.verify(token).map_err(|_| ())
         }
     }
+
     async fn handler(_req: Request) -> impl IntoResponse {
         (StatusCode::OK, "Ok")
     }
